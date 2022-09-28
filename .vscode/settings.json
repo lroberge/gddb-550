@@ -19,5 +19,6 @@
         "xtree": "cpp",
         "xutility": "cpp"
     },
-    "C_Cpp.intelliSenseEngineFallback": "Disabled"
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
+    "cmake.configureOnOpen": false
 }
