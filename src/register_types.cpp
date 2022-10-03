@@ -11,7 +11,7 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "example.h"
+#include "database.h"
 #include "tests.h"
 
 using namespace godot;
@@ -21,9 +21,8 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
 		return;
 	}
 
-	ClassDB::register_class<ExampleRef>();
-	ClassDB::register_class<ExampleMin>();
-	ClassDB::register_class<Example>();
+	ClassDB::register_class<DatabaseUI>();
+	
 }
 
 void uninitialize_example_module(ModuleInitializationLevel p_level) {

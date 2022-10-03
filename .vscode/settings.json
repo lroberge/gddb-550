@@ -17,8 +17,8 @@
         "xmemory": "cpp",
         "xstring": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "atomic": "cpp"
     },
-    "C_Cpp.intelliSenseEngineFallback": "Disabled",
-    "cmake.configureOnOpen": false
+    "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }
