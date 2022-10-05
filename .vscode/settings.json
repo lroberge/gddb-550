@@ -20,5 +20,6 @@
         "xutility": "cpp",
         "atomic": "cpp"
     },
-    "C_Cpp.intelliSenseEngineFallback": "Disabled"
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
+    "cmake.configureOnOpen": false
 }
