@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3 uid="uid://dyu0qa0gx8fwe"]
+
+[ext_resource type="Theme" uid="uid://bqxj0eursfe57" path="res://editortheme.tres" id="1_k4m8b"]
+
+[node name="Database" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_k4m8b")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -11.0
+offset_right = 40.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Test panel"
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_k4m8b")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 1147.0
+offset_bottom = 643.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2i(0, 25)
+layout_mode = 2
+offset_right = 1142.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "DB name"
+
+[node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+offset_top = 29.0
+offset_right = 1142.0
+offset_bottom = 638.0
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer/Panel2"]
+layout_mode = 0
+offset_top = -608.0
+offset_right = 1142.0
+offset_bottom = -4.0
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Panel2/ScrollContainer"]
+layout_mode = 2

@@ -15,6 +15,14 @@
 
 using namespace godot;
 
+void DatabaseUI::_enter_tree() {
+
+}
+
+void DatabaseUI::_exit_tree() {
+	
+}
+
 bool DatabaseUI::_has_main_screen() const {
 	UtilityFunctions::print("Has main screen");
 	return true;
@@ -29,6 +37,8 @@ Ref<Texture2D> DatabaseUI::_get_plugin_icon() {
 }
 
 void DatabaseUI::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_enter_tree"), &DatabaseUI::_enter_tree);
+	ClassDB::bind_method(D_METHOD("_exit_tree"), &DatabaseUI::_exit_tree);
 	ClassDB::bind_method(D_METHOD("has_main_screen"), &DatabaseUI::_has_main_screen);
 	ClassDB::bind_method(D_METHOD("get_plugin_name"), &DatabaseUI::_get_plugin_name);
 	ClassDB::bind_method(D_METHOD("get_plugin_icon"), &DatabaseUI::_get_plugin_icon);

@@ -29,6 +29,9 @@ class DatabaseUI : public EditorPlugin {
 public:
 	static void _bind_methods();
 
+	void _enter_tree();
+	void _exit_tree();
+
 	bool _has_main_screen() const;
 	String _get_plugin_name() const;
 	Ref<Texture2D> _get_plugin_icon();
