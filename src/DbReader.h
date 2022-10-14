@@ -2,11 +2,23 @@
 
 #include <string>
 
-static class DbReader {
-public:
-    static void open_file(std::string);
+enum ColumnType
+{
+    numi,
+    numf,
+    phrase,
+    sentence,
+    tags
 };
 
-struct Database {
-    
+static class DbReader
+{
+public:
+    static DatabaseHandle open_file(std::string);
+};
+
+struct DatabaseHandle
+{
+    std::string name;
+    ColumnType *columns;
 };

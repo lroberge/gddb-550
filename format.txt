@@ -8,8 +8,8 @@ header
 page
 
 types
-smallstring (specific short length, indexable)
-bigstring (extensive length, not indexable)
+smallstring (specific short length, indexable) - "phrase"
+bigstring (extensive length, not indexable) - "sentence"
 int32
 float
 tag array
