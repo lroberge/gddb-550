@@ -1,0 +1,15 @@
+header
+    magic number
+    crc32 or other hash
+    db name
+    column type bytes (e.g. 3 for 3 columns, 6 for 6)
+    null byte
+    num pages
+page
+
+types
+smallstring (specific short length, indexable)
+bigstring (extensive length, not indexable)
+int32
+float
+tag array
