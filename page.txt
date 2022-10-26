@@ -1,0 +1,48 @@
+what needs to be done: *compilation*
+the paged format is fine for editing, but there's no reason for players to want to edit 
+(beyond modding, which should have these tools provided anyway)
+so we can reorganize the file in a way that's more conducive to reading efficiently
+- no pages; all sections have set byte length
+- no writer, except for a conversion from paged to compiled format
+- b-trees, taglists, and entries all contiguous
+
+^^^ this will probably be milestone 2. straight up just this, + proper editor UI
+
+
+
+header
+    magic - gddb
+    version - uint16, 2 bytes
+    format - uint8, 1 byte (paged vs "compiled")
+    hash? - some bytes
+    pagecount - uint16, 2 bytes
+page - 8192 bytes
+    current used bytes in page - uint16, 2 bytes
+    structure
+        columns
+            column type - enum, 1 byte
+            column name - string
+            index page - uint16, 2 bytes (zero if none)
+            index index - uint16, 2 bytes (zero if none)
+    taglist
+        column indices - string array
+        continued? - bool, 1 byte
+        continued page - uint16, 2 bytes (zero if not continued)
+        num tags - uint16, 2 bytes
+        tags - string array
+    b-trees
+        b-tree object - 3 + (num branches * branch(type)) bytes
+            index type - enum, 1 byte
+            num branches - uint16, 2 bytes
+            branch - 
+                index - size according to enum
+                    numi: int32, 4 bytes
+                    numf: float, 4 bytes
+                    ascii character: 1 byte
+                    tag: uint16, 2 bytes
+                leaf? - bool, 1 byte
+                page - uint16, 2 bytes
+                    should be an entry page if leaf == true, otherwise should be a b-tree page
+                child index - uint16, 2 bytes
+    entry
+
