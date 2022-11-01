@@ -2,22 +2,22 @@ what needs to be done: *compilation*
 the paged format is fine for editing, but there's no reason for players to want to edit 
 (beyond modding, which should have these tools provided anyway)
 so we can reorganize the file in a way that's more conducive to reading efficiently
+- b-trees, taglists, and entries all contiguous
 - no pages; all sections have set byte length
 - no writer, except for a conversion from paged to compiled format
-- b-trees, taglists, and entries all contiguous
 
 ^^^ this will probably be milestone 2. straight up just this, + proper editor UI
 
 
 
 header
-    magic - gddb
+    magic - gdb
     version - uint16, 2 bytes
     format - uint8, 1 byte (paged vs "compiled")
     hash? - some bytes
     pagecount - uint16, 2 bytes
 page - 8192 bytes
-    current used bytes in page - uint16, 2 bytes
+    page type - uint8, 1 byte
     structure
         columns
             column type - enum, 1 byte

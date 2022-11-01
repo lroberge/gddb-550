@@ -1,6 +1,6 @@
 header
     magic number
-    crc32 or other hash
+    crc32 or other hash (md5)
     db name
     column type bytes (e.g. 3 for 3 columns, 6 for 6)
     null byte
@@ -13,3 +13,19 @@ bigstring (extensive length, not indexable) - "sentence"
 int32
 float
 tag array
+
+[gddb]
+[version uint16]
+[crc string x 32 bits]
+[name len uint8][name string]
+[type bytes x column count][null type byte]
+
+indices:
+    handled as b-trees
+    i.e. for phrase: root has X branches where X is the number of first characters
+    then each of those has Y branches where Y is the number of second characters after that first character
+
+pages:
+    contain data. thats it
+    types of page:
+        index (contains a b-tree)
