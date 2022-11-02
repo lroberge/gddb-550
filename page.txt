@@ -9,7 +9,6 @@ so we can reorganize the file in a way that's more conducive to reading efficien
 ^^^ this will probably be milestone 2. straight up just this, + proper editor UI
 
 
-
 header
     magic - gdb
     version - uint16, 2 bytes
@@ -25,10 +24,8 @@ page - 8192 bytes
             index page - uint16, 2 bytes (zero if none)
             index index - uint16, 2 bytes (zero if none)
     taglist
-        column indices - string array
-        continued? - bool, 1 byte
-        continued page - uint16, 2 bytes (zero if not continued)
-        num tags - uint16, 2 bytes
+        column index - uint8, 1 byte
+        num tags - uint8, 1 byte
         tags - string array
     b-trees
         b-tree object - 3 + (num branches * branch(type)) bytes
