@@ -27,15 +27,12 @@ DbHandle DbWriter::create_db(std::string path)
 		dbhandle.path = path;
 		dbhandle.format = DbFormat::paged;
 		dbhandle.columncount = 0;
-		dbhandle.columns = nullptr;
+		//dbhandle.columns = nullptr;
 
 		// Write empty structure page into db
-		DbPage structurepage = {
-			PageType::dbstructure,
-			StructurePage()
-		};
+		StructurePage structurepage = {};
 
-		write_page(dbhandle, &structurepage, 0);
+		write_page<StructurePage>(&dbhandle, &structurepage, 0);
 
 		std::cout << "Successfully created db!\n\n";
 	}
@@ -47,7 +44,8 @@ DbHandle DbWriter::create_db(std::string path)
 	return dbhandle;
 }
 
-bool DbWriter::write_page(DbHandle* dbhandle, DbPage* page, uint16_t index)
+template <class typedPage>
+bool DbWriter::write_page(DbHandle* dbhandle, typedPage* page, uint16_t index)
 {
 	if (dbhandle->error)
 	{
@@ -56,11 +54,11 @@ bool DbWriter::write_page(DbHandle* dbhandle, DbPage* page, uint16_t index)
 
 	std::fstream ostr(dbhandle->path, std::ios::in | std::ios::out | std::ios::binary);
 
-	ostr.seekp(sizeof(DbHeader) + (sizeof(DbPage) * index), std::ios_base::beg);
+	ostr.seekp(sizeof(DbHeader) + (PAGE_LENGTH * index), std::ios_base::beg);
 
 	if (ostr.is_open() && ostr.good())
 	{
-		ostr.write((char*)page, sizeof(DbPage));
+		ostr.write((char*)page, PAGE_LENGTH);
 		ostr.close();
 	}
 	else

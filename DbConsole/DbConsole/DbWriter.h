@@ -13,6 +13,6 @@ public:
 	static DbHandle create_db(std::string path);
 
 public: //private, but public for testing
-	static bool write_page(DbHandle* dbhandle, DbPage* page, uint16_t index);
+	template <class typedPage> static bool write_page(DbHandle* dbhandle, typedPage* page, uint16_t index);
 };
 

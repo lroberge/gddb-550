@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "DbOperations.h"
 
 bool DbOperations::create_column(DbHandle* dbhandle, ColumnType coltype, std::string name)
@@ -26,7 +28,7 @@ bool DbOperations::create_tag(DbHandle* dbhandle, std::string name, SimpleColor 
 
 	if (dbhandle->tagcount > 0) 
 	{
-		page = DbReader::load_page(dbhandle, 1);
+		//page = DbReader::load_page(dbhandle, 1);
 	}
 	else
 	{
@@ -43,7 +45,7 @@ bool DbOperations::create_tag(DbHandle* dbhandle, std::string name, SimpleColor 
 	taglist->totaltagnum += 1;
 
 	dbhandle->tagcount = taglist->totaltagnum;
-	dbhandle->tags.assign(&taglist->tags, &taglist->tags + taglist->totaltagnum);
+	//dbhandle->tags.assign(&taglist->tags, &taglist->tags + taglist->totaltagnum);
 
 	return true;
 }

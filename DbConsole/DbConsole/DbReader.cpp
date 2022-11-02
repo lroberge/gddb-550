@@ -36,9 +36,10 @@ std::unique_ptr<DbHandle> DbReader::open_db(std::string path)
 	return dbhandle;
 }
 
-std::unique_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
+template <class typedPage>
+std::unique_ptr<typedPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 {
-	auto page = std::make_unique<DbPage>();
+	auto page = std::make_unique<typedPage>();
 
 	if (dbhandle->error) 
 	{
@@ -48,11 +49,11 @@ std::unique_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 
 	std::ifstream istr(dbhandle->path, std::ios::binary);
 
-	istr.seekg(sizeof(DbHeader) + (sizeof(DbPage) * index), istr.beg);
+	istr.seekg(sizeof(DbHeader) + (PAGE_LENGTH * index), istr.beg);
 
 	if (istr.is_open() && istr.good()) 
 	{
-		istr.read(reinterpret_cast<char*>(&*page), sizeof(DbPage));
+		istr.read(reinterpret_cast<char*>(&*page), PAGE_LENGTH);
 		istr.close();
 	}
 	else 
@@ -63,11 +64,14 @@ std::unique_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 	return page;
 }
 
-std::unique_ptr<DbPage> DbReader::load_structure_page(DbHandle* dbhandle)
+std::unique_ptr<StructurePage> DbReader::load_structure_page(DbHandle* dbhandle)
 {
-	auto structurepage = load_page(dbhandle, 0);
+	auto structurepage = load_page<StructurePage>(dbhandle, 0);
 	if (structurepage->type == PageType::dbstructure) {
 		return structurepage;
+	}
+	else {
+		return std::make_unique<StructurePage>();
 	}
 }
 
