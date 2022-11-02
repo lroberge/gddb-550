@@ -11,34 +11,37 @@ int main()
     std::ios::sync_with_stdio(false);
 
     std::cout << "dbpage size: " << sizeof(DbPage) << "\n";
-    std::cout << "structure size: " << sizeof(StructurePage) << "\n";
-    std::cout << "taglist size: " << sizeof(TagListPage) << "\n";
+    std::cout << "structure size: " << sizeof(StructureData) << "\n";
+    std::cout << "taglist size: " << sizeof(TagListData) << "\n";
 
-    StructurePage testpage = {};
+    StructureData teststructure = {};
     Column testcol1 = { ColumnType::numi, "ID", 1, 1 };
     Column testcol2 = { ColumnType::phrase, "Short Name", 1, 2 };
     Column testcol3 = { ColumnType::tags, "Tags", 1, 3 };
-    testpage.columncount = 3;
-    testpage.columns[0] = testcol1;
-    testpage.columns[1] = testcol2;
-    testpage.columns[2] = testcol3;
+    teststructure.columncount = 3;
+    teststructure.columns[0] = testcol1;
+    teststructure.columns[1] = testcol2;
+    teststructure.columns[2] = testcol3;
+    DbPage testpage = {};
+    testpage.type = PageType::dbstructure;
+    testpage.structure = teststructure;
 
     DbWriter::create_db("test.gddb");
     auto db = DbReader::open_db("test.gddb");
 
     std::cout << "\n\nTesting a page...\n";
 
-    DbWriter::write_page<StructurePage>(&*db, &testpage, 0);
+    DbWriter::write_page(&*db, &testpage, 0);
     std::cout << "Page written!\n";
 
-    auto returned_page = DbReader::load_structure_page(&*db);
+    auto read_structure = DbReader::load_structure_page(&*db);
     std::cout << "Page read!\n";
 
-    std::cout << "Number of columns: " << (int)returned_page->columncount << "\n";
+    std::cout << "Number of columns: " << (int)read_structure->columncount << "\n";
     std::cout << "Columns:\n";
-    for (int i = 0; i < (int)returned_page->columncount; i++)
+    for (int i = 0; i < (int)read_structure->columncount; i++)
     {
-        Column curcol = returned_page->columns[i];
+        Column curcol = read_structure->columns[i];
         std::cout << "  [" << (int)curcol.type << "] " << curcol.name << " (column index at page " << curcol.idxpage << ", index " << curcol.idxindex << ")\n";
     }
 

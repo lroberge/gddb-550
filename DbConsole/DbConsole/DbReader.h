@@ -14,7 +14,7 @@ public:
 	static std::unique_ptr<DbHandle> open_db(std::string path);
 
 public: //private, but public for testing
-	template <class typedPage> static std::unique_ptr<typedPage> load_page(DbHandle* dbhandle, uint16_t index);
-	static std::unique_ptr<StructurePage> load_structure_page(DbHandle* dbhandle);
+	static std::shared_ptr<DbPage> load_page(DbHandle* dbhandle, uint16_t index);
+	static std::shared_ptr<StructureData> load_structure_page(DbHandle* dbhandle);
 };
 

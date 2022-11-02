@@ -30,9 +30,11 @@ DbHandle DbWriter::create_db(std::string path)
 		//dbhandle.columns = nullptr;
 
 		// Write empty structure page into db
-		StructurePage structurepage = {};
+		DbPage structurepage = {};
+		structurepage.type = PageType::dbstructure;
+		structurepage.structure = StructureData();
 
-		write_page<StructurePage>(&dbhandle, &structurepage, 0);
+		write_page(&dbhandle, &structurepage, 0);
 
 		std::cout << "Successfully created db!\n\n";
 	}
@@ -44,8 +46,7 @@ DbHandle DbWriter::create_db(std::string path)
 	return dbhandle;
 }
 
-template <class typedPage>
-bool DbWriter::write_page(DbHandle* dbhandle, typedPage* page, uint16_t index)
+bool DbWriter::write_page(DbHandle* dbhandle, DbPage* page, uint16_t index)
 {
 	if (dbhandle->error)
 	{

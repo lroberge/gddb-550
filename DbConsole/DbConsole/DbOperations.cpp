@@ -24,18 +24,18 @@ bool DbOperations::create_tag(DbHandle* dbhandle, std::string name, SimpleColor 
 		return false;
 	}
 
-	std::unique_ptr<DbPage> page;
+	std::shared_ptr<DbPage> page;
 
 	if (dbhandle->tagcount > 0) 
 	{
-		//page = DbReader::load_page(dbhandle, 1);
+		page = DbReader::load_page(dbhandle, 1);
 	}
 	else
 	{
-		page = std::make_unique<TagListPage>();
+		page = std::make_unique<DbPage>();
 	}
 
-	TagListPage* taglist = reinterpret_cast<TagListPage*>(&page);
+	TagListData* taglist = reinterpret_cast<TagListData*>(&page);
 
 	Tag newtag = {};
 	strcpy(newtag.name, name.c_str());

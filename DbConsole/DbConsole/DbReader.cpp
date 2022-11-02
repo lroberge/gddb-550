@@ -22,11 +22,9 @@ std::unique_ptr<DbHandle> DbReader::open_db(std::string path)
 		dbhandle->path = path;
 		dbhandle->format = head->format;
 
-		//std::cout << "\nformat as enum: " << (DbFormat)dbhandle.format << "\n";
-
-		//std::cout << "\n\n\nsizeof Column: " << sizeof(Column) << "\n";
-		//std::cout << "sizeof PageData: " << sizeof(PageData) << "\n";
-		//std::cout << "sizeof DbPage: " << sizeof(DbPage) << "\n";
+		auto structure = load_structure_page(&*dbhandle);
+		dbhandle->columncount = structure->columncount;
+		dbhandle->columns.assign(structure->columncount, *(structure->columns));
 	}
 	else
 	{
@@ -36,10 +34,9 @@ std::unique_ptr<DbHandle> DbReader::open_db(std::string path)
 	return dbhandle;
 }
 
-template <class typedPage>
-std::unique_ptr<typedPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
+std::shared_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 {
-	auto page = std::make_unique<typedPage>();
+	auto page = std::make_shared<DbPage>();
 
 	if (dbhandle->error) 
 	{
@@ -64,14 +61,14 @@ std::unique_ptr<typedPage> DbReader::load_page(DbHandle* dbhandle, uint16_t inde
 	return page;
 }
 
-std::unique_ptr<StructurePage> DbReader::load_structure_page(DbHandle* dbhandle)
+std::shared_ptr<StructureData> DbReader::load_structure_page(DbHandle* dbhandle)
 {
-	auto structurepage = load_page<StructurePage>(dbhandle, 0);
+	auto structurepage = load_page(dbhandle, 0);
 	if (structurepage->type == PageType::dbstructure) {
-		return structurepage;
+		return std::shared_ptr<StructureData>(structurepage, &(structurepage->structure));
 	}
 	else {
-		return std::make_unique<StructurePage>();
+		return std::make_shared<StructureData>();
 	}
 }
 

@@ -7,44 +7,34 @@
 const uint16_t MAX_COLUMN_COUNT = 102;
 const uint16_t MAX_TAG_COUNT = 255;
 
-struct DbPage {
-	uint16_t type;
-};
-
-struct StructurePage : DbPage {
+struct StructureData {
 	uint8_t columncount = 0;
-	Column columns[MAX_COLUMN_COUNT];
-
-	char padding[28];
-
-	StructurePage() {
-		this->type = PageType::dbstructure;
-	}
+	Column columns[MAX_COLUMN_COUNT] = {};
 };
 
-struct TagListPage : DbPage {
+struct TagListData {
 	uint8_t totaltagnum = 0;
-	Tag tags[MAX_TAG_COUNT];
-
-	char padding[28];
-
-	TagListPage() {
-		this->type = PageType::taglist;
-	}
+	Tag tags[MAX_TAG_COUNT] = {};
 };
 
-struct TreePage : DbPage {
+struct TreeData {
 
-
-	TreePage() {
-		this->type = PageType::tree;
-	}
 };
 
-struct EntryPage : DbPage {
+struct EntryData {
 
+};
 
-	EntryPage() {
-		this->type = PageType::entry;
-	}
+struct DbPage {
+	uint16_t type = PageType::empty;
+	union {
+		StructureData structure;
+		TagListData taglist;
+		TreeData trees;
+		EntryData entries;
+		char unstructured[8190];
+	};
+
+	DbPage();
+	DbPage(const DbPage& page);
 };
