@@ -35,6 +35,6 @@ struct DbPage {
 		char unstructured[8190];
 	};
 
-	DbPage();
-	DbPage(const DbPage& page);
+	DbPage() {};
+	DbPage(const DbPage& page) {};
 };
