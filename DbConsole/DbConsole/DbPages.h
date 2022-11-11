@@ -17,9 +17,10 @@ struct TagListData {
 	Tag tags[MAX_TAG_COUNT] = {};
 };
 
-//struct TableIndexData {
-//	uint8_t 
-//};
+template <class T>
+struct TableIndexData {
+	
+};
 
 struct TreeIndexData {
 
