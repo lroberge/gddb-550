@@ -14,7 +14,7 @@ DbHandle DbWriter::create_db(std::string path)
 		DbFormat::paged,
 		false,
 		0,
-		15
+		3
 	};
 
 	std::fstream db(path, std::ios::out | std::ios::binary | std::ios::trunc);
