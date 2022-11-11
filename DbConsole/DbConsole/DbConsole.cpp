@@ -8,44 +8,49 @@
 
 int main()
 {
-    std::ios::sync_with_stdio(false);
+	std::ios::sync_with_stdio(false);
 
-    std::cout << "dbpage size: " << sizeof(DbPage) << "\n";
-    std::cout << "structure size: " << sizeof(StructureData) << "\n";
-    std::cout << "taglist size: " << sizeof(TagListData) << "\n";
+	std::cout << "dbpage size: " << sizeof(DbPage) << "\n";
+	std::cout << "structure size: " << sizeof(StructureData) << "\n";
+	std::cout << "taglist size: " << sizeof(TagListData) << "\n";
 
-    StructureData teststructure = {};
-    Column testcol1 = { ColumnType::numi, "ID", 1, 1 };
-    Column testcol2 = { ColumnType::phrase, "Short Name", 1, 2 };
-    Column testcol3 = { ColumnType::tags, "Tags", 1, 3 };
-    teststructure.columncount = 3;
-    teststructure.columns[0] = testcol1;
-    teststructure.columns[1] = testcol2;
-    teststructure.columns[2] = testcol3;
-    DbPage testpage = {};
-    testpage.type = PageType::dbstructure;
-    testpage.structure = teststructure;
+	StructureData teststructure = {};
+	Column testcol1 = { ColumnType::numi, "ID", 1, {{IndexType::table, 1, 1}} };
+	Column testcol2 = { ColumnType::phrase, "Short Name", 1, {{IndexType::table, 1, 2}} };
+	Column testcol3 = { ColumnType::tags, "Tags", 2, {{IndexType::tree, 2, 1}, {IndexType::table, 1, 3}} };
+	teststructure.columncount = 3;
+	teststructure.columns[0] = testcol1;
+	teststructure.columns[1] = testcol2;
+	teststructure.columns[2] = testcol3;
+	DbPage testpage = {};
+	testpage.type = PageType::dbstructure;
+	testpage.structure = teststructure;
 
-    DbWriter::create_db("test.gddb");
-    auto db = DbReader::open_db("test.gddb");
+	DbWriter::create_db("test.gddb");
+	auto db = DbReader::open_db("test.gddb");
 
-    std::cout << "\n\nTesting a page...\n";
+	std::cout << "\n\nTesting a page...\n";
 
-    DbWriter::write_page(&*db, &testpage, 0);
-    std::cout << "Page written!\n";
+	DbWriter::write_page(&*db, &testpage, 0);
+	std::cout << "Page written!\n";
 
-    auto read_structure = DbReader::load_structure_page(&*db);
-    std::cout << "Page read!\n";
+	auto read_structure = DbReader::load_structure_page(&*db);
+	std::cout << "Page read!\n";
 
-    std::cout << "Number of columns: " << (int)read_structure->columncount << "\n";
-    std::cout << "Columns:\n";
-    for (int i = 0; i < (int)read_structure->columncount; i++)
-    {
-        Column curcol = read_structure->columns[i];
-        std::cout << "  [" << (int)curcol.type << "] " << curcol.name << " (column index at page " << curcol.idxpage << ", index " << curcol.idxindex << ")\n";
-    }
+	std::cout << "Number of columns: " << (int)read_structure->columncount << "\n";
+	std::cout << "Columns:\n";
+	for (int i = 0; i < (int)read_structure->columncount; i++)
+	{
+		Column curcol = read_structure->columns[i];
+		std::cout << "  [" << (int)curcol.type << "] " << curcol.name << ": ";
+		for (int j = 0; j < (int)curcol.numindexes; j++)
+		{
+			Index curidx = curcol.indexes[j];
+			std::cout << "    (" << ((curidx.type == IndexType::table) ? "table" : "tree") << " index on page " << curidx.idxpage << " at index " << curidx.idxindex << ")";
+		}
+	}
 
-    std::cout << "Done\n";
+	std::cout << "Done\n";
 
 }
 

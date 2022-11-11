@@ -7,6 +7,14 @@ static const uint16_t DB_VERSION = 2;
 static const uint16_t PAGE_LENGTH = 8192;
 static const uint16_t MAX_COLUMN_NAME_LENGTH = 75;
 static const uint16_t MAX_TAG_NAME_LENGTH = 29;
+// may change - ints can have a table and tree index, necessitating up to 2
+static const uint8_t MAX_INDEXES = 2;
+
+enum DbFormat
+{
+    paged,
+    packed
+};
 
 enum ColumnType
 {
@@ -17,24 +25,31 @@ enum ColumnType
     tags
 };
 
+enum IndexType
+{
+    table,
+    tree
+};
+
 enum PageType
 {
     empty,
     dbstructure,
     taglist,
-    tree,
+    tablepage,
+    treepage,
     entry
 };
 
-enum DbFormat
-{
-    paged,
-    packed
+struct Column {
+    ColumnType type;
+    char name[MAX_COLUMN_NAME_LENGTH];
+    uint8_t numindexes;
+    Index indexes[MAX_INDEXES] = {};
 };
 
-struct Column {
-    uint8_t type;
-    char name[MAX_COLUMN_NAME_LENGTH];
+struct Index {
+    IndexType type;
     uint16_t idxpage;
     uint16_t idxindex;
 };

@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "DbOperations.h"
+#include "MurmurHash3.h"
 
 bool DbOperations::create_column(DbHandle* dbhandle, ColumnType coltype, std::string name)
 {

@@ -17,7 +17,11 @@ struct TagListData {
 	Tag tags[MAX_TAG_COUNT] = {};
 };
 
-struct TreeData {
+//struct TableIndexData {
+//	uint8_t 
+//};
+
+struct TreeIndexData {
 
 };
 
@@ -30,7 +34,8 @@ struct DbPage {
 	union {
 		StructureData structure;
 		TagListData taglist;
-		TreeData trees;
+		//TableIndexData table;
+		TreeIndexData tree;
 		EntryData entries;
 		char unstructured[8190];
 	};
