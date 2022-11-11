@@ -15,9 +15,13 @@ int main()
 	std::cout << "taglist size: " << sizeof(TagListData) << "\n";
 
 	StructureData teststructure = {};
-	Column testcol1 = { ColumnType::numi, "ID", 1, {{IndexType::table, 1, 1}} };
-	Column testcol2 = { ColumnType::phrase, "Short Name", 1, {{IndexType::table, 1, 2}} };
-	Column testcol3 = { ColumnType::tags, "Tags", 2, {{IndexType::tree, 2, 1}, {IndexType::table, 1, 3}} };
+	Index col1idx = { IndexType::table, 1, 1 };
+	Column testcol1 = { ColumnType::numi, "ID", 1, col1idx };
+	Index col2idx = { IndexType::table, 1, 2 };
+	Column testcol2 = { ColumnType::phrase, "Short Name", 1, col2idx };
+	Index col3idx1 = { IndexType::tree, 2, 1 }, col3idx2 = { IndexType::table, 1, 3 };
+	Index[] col3idxs = { col3idx1, col3idx2 };
+	Column testcol3 = { ColumnType::tags, "Tags", 2, col3idxs };
 	teststructure.columncount = 3;
 	teststructure.columns[0] = testcol1;
 	teststructure.columns[1] = testcol2;

@@ -17,9 +17,7 @@ struct TagListData {
 	Tag tags[MAX_TAG_COUNT] = {};
 };
 
-//template <class T>
-
-template <class T> requires (sizeof(T) == 4)
+template <class T> requires(sizeof(T) == 4)
 struct TableIndexData {
 	T indexvalues[2047][4];
 };
