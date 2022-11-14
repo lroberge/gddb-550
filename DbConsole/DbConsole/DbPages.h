@@ -4,7 +4,7 @@
 
 #include "DbUtility.h"
 
-const uint16_t MAX_COLUMN_COUNT = 102;
+const uint16_t MAX_COLUMN_COUNT = 85;
 const uint16_t MAX_TAG_COUNT = 255;
 
 struct StructureData {
@@ -17,9 +17,12 @@ struct TagListData {
 	Tag tags[MAX_TAG_COUNT] = {};
 };
 
-template <class T> requires(sizeof(T) == 4)
 struct TableIndexData {
-	T indexvalues[2047];
+	union {
+		int intindex[2047];
+		float floatindex[2047];
+		char strindex[4][2047];
+	};
 };
 
 struct TreeIndexData {
@@ -35,10 +38,9 @@ struct DbPage {
 	union {
 		StructureData structure;
 		TagListData taglist;
-		//TableIndexData table;
+		TableIndexData table;
 		TreeIndexData tree;
-		EntryData entries;
-		char unstructured[8190];
+		char data[8188];
 	};
 
 	DbPage() {};

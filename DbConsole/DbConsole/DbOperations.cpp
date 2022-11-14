@@ -33,20 +33,25 @@ bool DbOperations::create_tag(DbHandle* dbhandle, std::string name, SimpleColor 
 	}
 	else
 	{
-		page = std::make_unique<DbPage>();
+		page = std::make_shared<DbPage>();
+		page->type = PageType::taglist;
 	}
 
-	TagListData* taglist = reinterpret_cast<TagListData*>(&page);
+	TagListData* taglist = &(page->taglist);
 
 	Tag newtag = {};
 	strcpy(newtag.name, name.c_str());
 	newtag.tagcolor = color;
 
-	taglist->tags[taglist->totaltagnum] = newtag;
+	Tag* tags = taglist->tags;
+
+	tags[taglist->totaltagnum] = newtag;
 	taglist->totaltagnum += 1;
 
 	dbhandle->tagcount = taglist->totaltagnum;
-	//dbhandle->tags.assign(&taglist->tags, &taglist->tags + taglist->totaltagnum);
+	dbhandle->tags.assign(tags, tags + taglist->totaltagnum);
+
+	DbWriter::write_page(dbhandle, &*page, 1);
 
 	return true;
 }

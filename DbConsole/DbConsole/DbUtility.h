@@ -61,7 +61,7 @@ struct SimpleColor {
 };
 
 struct Tag {
-    char name[MAX_TAG_NAME_LENGTH];
+    char name[MAX_TAG_NAME_LENGTH] = {};
     SimpleColor tagcolor;
 };
 
