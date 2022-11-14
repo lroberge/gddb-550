@@ -17,11 +17,14 @@ int main()
 	StructureData teststructure = {};
 	Index col1idx = { IndexType::table, 1, 1 };
 	Column testcol1 = { ColumnType::numi, "ID", 1, col1idx };
+	//testcol1.indexes[0] = col1idx;
 	Index col2idx = { IndexType::table, 1, 2 };
 	Column testcol2 = { ColumnType::phrase, "Short Name", 1, col2idx };
+	//testcol2.indexes[0] = col2idx;
 	Index col3idx1 = { IndexType::tree, 2, 1 }, col3idx2 = { IndexType::table, 1, 3 };
-	Index[] col3idxs = { col3idx1, col3idx2 };
-	Column testcol3 = { ColumnType::tags, "Tags", 2, col3idxs };
+	Column testcol3 = { ColumnType::tags, "Tags", 2, col3idx1, col3idx2 };
+	//testcol3.indexes[0] = col3idx1;
+	//testcol3.indexes[1] = col3idx2;
 	teststructure.columncount = 3;
 	teststructure.columns[0] = testcol1;
 	teststructure.columns[1] = testcol2;
@@ -46,11 +49,11 @@ int main()
 	for (int i = 0; i < (int)read_structure->columncount; i++)
 	{
 		Column curcol = read_structure->columns[i];
-		std::cout << "  [" << (int)curcol.type << "] " << curcol.name << ": ";
+		std::cout << "  [" << (int)curcol.type << "] " << curcol.name << ":\n";
 		for (int j = 0; j < (int)curcol.numindexes; j++)
 		{
 			Index curidx = curcol.indexes[j];
-			std::cout << "    (" << ((curidx.type == IndexType::table) ? "table" : "tree") << " index on page " << curidx.idxpage << " at index " << curidx.idxindex << ")";
+			std::cout << "    (" << ((curidx.type == IndexType::table) ? "table" : "tree") << " index on page " << curidx.idxpage << " at index " << curidx.idxindex << ")\n";
 		}
 	}
 

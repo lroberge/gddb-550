@@ -19,7 +19,7 @@ struct TagListData {
 
 template <class T> requires(sizeof(T) == 4)
 struct TableIndexData {
-	T indexvalues[2047][4];
+	T indexvalues[2047];
 };
 
 struct TreeIndexData {

@@ -41,17 +41,17 @@ enum PageType
     entry
 };
 
-struct Column {
-    ColumnType type;
-    char name[MAX_COLUMN_NAME_LENGTH];
-    uint8_t numindexes;
-    Index indexes[MAX_INDEXES] = {};
-};
-
 struct Index {
     IndexType type;
     uint16_t idxpage;
     uint16_t idxindex;
+};
+
+struct Column {
+    ColumnType type;
+    char name[MAX_COLUMN_NAME_LENGTH];
+    uint8_t numindexes;
+    Index indexes[MAX_INDEXES];
 };
 
 struct SimpleColor {
