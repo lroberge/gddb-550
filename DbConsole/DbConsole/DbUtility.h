@@ -20,8 +20,7 @@ enum ColumnType
 {
     numi,
     numf,
-    phrase,
-    sentence,
+    string,
     tags
 };
 
@@ -54,6 +53,17 @@ struct Column {
     Index indexes[MAX_INDEXES];
 };
 
+union EntryColumn {
+    int i;
+    float f;
+    char s[];
+    int t[];
+};
+
+struct Entry {
+    EntryColumn items[];
+};
+
 struct SimpleColor {
     uint8_t r;
     uint8_t g;
@@ -84,4 +94,20 @@ struct DbHeader
     bool dirty;
     uint32_t crc32; //unused right this second
     uint16_t pagecount;
+};
+
+class DbEntry
+{
+private:
+    // the list of columns and their types is in here
+    // so we can map a column index to its type
+    std::shared_ptr<DbHandle> parentDb;
+
+    char data; // unformatted memory of the entry
+    int offsets; // list of byte offsets where columns start
+                 // defined by db's columns (if possible) and entry's contents
+
+public:
+    DbEntry(char data[]); // construct the offsets list
+    void* get_entry(int column); // probably have an outside function to handle casting
 };

@@ -15,6 +15,14 @@ bool DbOperations::create_column(DbHandle* dbhandle, ColumnType coltype, std::st
 
 }
 
+bool DbOperations::create_entry(DbHandle* dbhandle) {
+	int last = 1;
+	int openbytes = 0;
+
+	DbReader::find_next_page(dbhandle, PageType::entry);
+	return false;
+}
+
 bool DbOperations::create_tag(DbHandle* dbhandle, std::string name, SimpleColor color)
 {
 	if (name.length() <= 0 ||

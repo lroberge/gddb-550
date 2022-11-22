@@ -61,6 +61,24 @@ std::shared_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 	return page;
 }
 
+int DbReader::find_next_page(DbHandle* dbhandle, PageType type, int from = 1)
+{
+	std::ifstream istr(dbhandle->path, std::ios::binary);
+
+	PageType currtype = PageType::empty;
+	istr.seekg(sizeof(DbHeader) + (PAGE_LENGTH * from), istr.beg);
+	for (int i = from; !istr.eof(); i++) {
+		istr.read(reinterpret_cast<char*>(&currtype), 2);
+		if (currtype == type) {
+			istr.close();
+			return i;
+		}
+		istr.seekg(sizeof(DbHeader) + (PAGE_LENGTH * i + 1), istr.beg);
+	}
+	istr.close();
+	return -1;
+}
+
 std::shared_ptr<StructureData> DbReader::load_structure_page(DbHandle* dbhandle)
 {
 	auto structurepage = load_page(dbhandle, 0);

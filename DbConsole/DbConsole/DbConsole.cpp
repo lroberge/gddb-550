@@ -15,12 +15,14 @@ int main()
 	std::cout << "structure size: " << sizeof(StructureData) << "\n";
 	std::cout << "taglist size: " << sizeof(TagListData) << "\n";
 	std::cout << "tableindex size: " << sizeof(TableIndexData) << "\n";
+	std::cout << "entrydata size: " << sizeof(EntryData) << "\n";
+	return 0;
 
 	StructureData teststructure = {};
 	Index col1idx = { IndexType::table, 1, 1 };
 	Column testcol1 = { ColumnType::numi, "ID", 1, col1idx };
 	Index col2idx = { IndexType::table, 1, 2 };
-	Column testcol2 = { ColumnType::phrase, "Short Name", 1, col2idx };
+	Column testcol2 = { ColumnType::string, "Short Name", 1, col2idx };
 	Index col3idx1 = { IndexType::tree, 2, 1 }, col3idx2 = { IndexType::table, 1, 3 };
 	Column testcol3 = { ColumnType::tags, "Tags", 2, col3idx1, col3idx2 };
 	teststructure.columncount = 3;

@@ -30,7 +30,8 @@ struct TreeIndexData {
 };
 
 struct EntryData {
-
+	uint16_t freebytes = 8186;
+	char data[];
 };
 
 struct DbPage {
@@ -40,6 +41,7 @@ struct DbPage {
 		TagListData taglist;
 		TableIndexData table;
 		TreeIndexData tree;
+		EntryData entries;
 		char data[8188];
 	};
 
