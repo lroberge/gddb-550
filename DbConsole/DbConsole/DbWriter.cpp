@@ -25,6 +25,7 @@ DbHandle DbWriter::create_db(std::string path)
 
 		// Set up db handle with initial values
 		dbhandle.path = path;
+		dbhandle.entriespath = path.substr(0, path.length() - 5) + ".bson";
 		dbhandle.format = DbFormat::paged;
 		dbhandle.columncount = 0;
 		//dbhandle.columns = nullptr;
@@ -68,4 +69,27 @@ bool DbWriter::write_page(DbHandle* dbhandle, DbPage* page, uint16_t index)
 	}
 
 	return true;
+}
+
+bool DbWriter::write_entries(DbHandle* dbhandle, jsoncons::ojson* entries)
+{
+	if (dbhandle->error)
+	{
+		return false;
+	}
+
+	std::fstream ostr(dbhandle->entriespath, std::ios::out | std::ios::binary | std::ios::trunc);
+
+	if (ostr.is_open() && ostr.good())
+	{
+		std::vector<uint8_t> bsondata;
+		jsoncons::bson::encode_bson(*entries, bsondata);
+
+		ostr.write(reinterpret_cast<const char*>(bsondata.data()), bsondata.size());
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

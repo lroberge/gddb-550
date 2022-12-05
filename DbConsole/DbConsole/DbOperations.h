@@ -1,5 +1,8 @@
 #pragma once
 
+#include <jsoncons/json.hpp>
+#include <jsoncons_ext/bson/bson.hpp>
+
 #include "DbWriter.h"
 #include "DbReader.h"
 #include "DbPages.h"

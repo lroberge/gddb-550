@@ -20,6 +20,7 @@ std::unique_ptr<DbHandle> DbReader::open_db(std::string path)
 		std::cout << "read pagecount: " << head->pagecount << "\n";
 
 		dbhandle->path = path;
+		dbhandle->entriespath = path.substr(0, path.length() - 5) + ".bson";
 		dbhandle->format = head->format;
 
 		auto structure = load_structure_page(&*dbhandle);
@@ -61,7 +62,7 @@ std::shared_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 	return page;
 }
 
-int DbReader::find_next_page(DbHandle* dbhandle, PageType type, int from = 1)
+int DbReader::find_next_page(DbHandle* dbhandle, PageType type, int from)
 {
 	std::ifstream istr(dbhandle->path, std::ios::binary);
 
@@ -87,6 +88,30 @@ std::shared_ptr<StructureData> DbReader::load_structure_page(DbHandle* dbhandle)
 	}
 	else {
 		return std::make_shared<StructureData>();
+	}
+}
+
+std::unique_ptr<jsoncons::ojson> DbReader::load_entries(DbHandle* dbhandle)
+{
+	if (dbhandle->error)
+	{
+		return 0;
+	}
+
+	std::ifstream istr(dbhandle->entriespath, std::ios::binary);
+
+	if (istr.is_open() && istr.good())
+	{
+		std::vector<uint8_t> contents((std::istreambuf_iterator<char>(istr)), std::istreambuf_iterator<char>());
+
+		auto entries = std::make_unique<jsoncons::ojson>(jsoncons::bson::decode_bson<jsoncons::ojson>(contents));
+
+		istr.close();
+		return entries;
+	}
+	else
+	{
+		return 0;
 	}
 }
 

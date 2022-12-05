@@ -29,10 +29,10 @@ struct TreeIndexData {
 
 };
 
-struct EntryData {
-	uint16_t freebytes = 8186;
-	char data[];
-};
+//struct EntryData {
+//	uint16_t freebytes = 8186;
+//	char data[];
+//};
 
 struct DbPage {
 	uint16_t type = PageType::empty;
@@ -41,7 +41,7 @@ struct DbPage {
 		TagListData taglist;
 		TableIndexData table;
 		TreeIndexData tree;
-		EntryData entries;
+		//EntryData entries;
 		char data[8188];
 	};
 

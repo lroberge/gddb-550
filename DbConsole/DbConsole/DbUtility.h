@@ -53,17 +53,6 @@ struct Column {
     Index indexes[MAX_INDEXES];
 };
 
-union EntryColumn {
-    int i;
-    float f;
-    char s[];
-    int t[];
-};
-
-struct Entry {
-    EntryColumn items[];
-};
-
 struct SimpleColor {
     uint8_t r;
     uint8_t g;
@@ -78,6 +67,7 @@ struct Tag {
 struct DbHandle
 {
     std::string path;
+    std::string entriespath;
     uint8_t format = 0;
     uint8_t columncount = 0;
     std::vector<Column> columns;

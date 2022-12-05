@@ -4,6 +4,9 @@
 #include <string>
 #include <fstream>
 
+#include <jsoncons/json.hpp>
+#include <jsoncons_ext/bson/bson.hpp>
+
 #include "DbUtility.h"
 #include "DbPages.h"
 
@@ -14,5 +17,6 @@ public:
 
 public: //private, but public for testing
 	static bool write_page(DbHandle* dbhandle, DbPage* page, uint16_t index);
+	static bool write_entries(DbHandle* dbhandle, jsoncons::ojson* entries);
 };
 
