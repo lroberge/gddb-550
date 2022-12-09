@@ -66,13 +66,50 @@ int main()
 
 	//DbOperations::create_tag(&*db, "test tag", { 255, 255, 255 });
 
-	std::string testentries = R"([{"ID":"lamp","Name":"Flashlight","Weight":0.5,"Tags":[1,4,5]},{"ID":"phb","Name":"Player's Handbook","Weight":3,"Tags":[1,3]}])";
-
-	jsoncons::ojson testjson = jsoncons::ojson::parse(testentries);
+	DbOperations::create_column(&*db, ColumnType::string, "name");
+	DbOperations::create_column(&*db, ColumnType::string, "type");
+	DbOperations::create_column(&*db, ColumnType::string, "tier");
+	DbOperations::create_column(&*db, ColumnType::string, "flavorText");
+	
+	std::ifstream is("test_destiny.json");
+	jsoncons::ojson testjson = jsoncons::ojson::parse(is);
 	DbWriter::write_entries(&*db, &testjson);
-	auto readentries = DbReader::load_entries(&*db);
+	DbReader::load_entries(&*db);
 
-	std::cout << *readentries << "\n";
+	std::cout << db->entries << "\n";
+
+	std::cout << "Attempting to index..." << "\n";
+	DbWriter::create_string_index(&*db, 0);
+	DbWriter::create_string_index(&*db, 1);
+	DbWriter::create_string_index(&*db, 2);
+	std::cout << "Successfully indexed" << "\n\n";
+
+	std::cout << "Searching for 'Exotic':" << "\n";
+	auto exotics = DbOperations::lookup_by_string(&*db, 2, "Exotic");
+	std::cout << "Found matches at indices ";
+	for (auto match : exotics)
+	{
+		std::cout << std::to_string(match) << ", ";
+	}
+	std::cout << "\n\n";
+
+	std::cout << "Searching for 'Gauntlets':" << "\n";
+	auto gauntlets = DbOperations::lookup_by_string(&*db, 1, "Gauntlets");
+	std::cout << "Found matches at indices ";
+	for (auto match : gauntlets)
+	{
+		std::cout << std::to_string(match) << ", ";
+	}
+	std::cout << "\n\n";
+
+	std::cout << "Searching for 'Exotic' and 'Gauntlets':" << "\n";
+	auto exotic_gauntlets = DbOperations::intersection(exotics, gauntlets);
+	std::cout << "Found matches at indices ";
+	for (auto match : exotic_gauntlets)
+	{
+		std::cout << std::to_string(match) << ", ";
+	}
+	std::cout << "\n\n";
 
 	std::cout << "Done\n";
 

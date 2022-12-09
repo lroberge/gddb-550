@@ -21,7 +21,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
 		return;
 	}
 
-	ClassDB::register_class<DatabaseUI>();
+	ClassDB::register_class<Database>();
 	
 }
 

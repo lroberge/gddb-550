@@ -14,31 +14,29 @@
 // #include <windows.h>
 // #endif
 
-#include <godot_cpp/classes/control.hpp>
-#include <godot_cpp/classes/global_constants.hpp>
-#include <godot_cpp/classes/viewport.hpp>
-
 #include <godot_cpp/core/binder_common.hpp>
-#include <godot_cpp/classes/editor_plugin.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+
+#include "DbUtility.h"
+#include "DbReader.h"
 
 using namespace godot;
 
-class DatabaseUI : public EditorPlugin {
-	GDCLASS(DatabaseUI, EditorPlugin);
+class Database : public Object {
+	GDCLASS(Database, Object);
 
 public:
+	Database(String path);
+	Database(Database &db);
+	~Database();
+
+	TypedArray<Dictionary> query_column(String column);
+
+protected:
 	static void _bind_methods();
 
-	void _enter_tree();
-	void _exit_tree();
-
-	bool _has_main_screen() const;
-	String _get_plugin_name() const;
-	Ref<Texture2D> _get_plugin_icon();
-
-
-	DatabaseUI();
-	~DatabaseUI();
+	std::unique_ptr<DbHandle> handle;
 };
 
 // VARIANT_ENUM_CAST(DatabaseUI, Constants);

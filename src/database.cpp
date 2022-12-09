@@ -15,36 +15,14 @@
 
 using namespace godot;
 
-void DatabaseUI::_enter_tree() {
+Database() {
 
 }
 
-void DatabaseUI::_exit_tree() {
-	
-}
+void Database::_bind_methods() {
 
-bool DatabaseUI::_has_main_screen() const {
-	UtilityFunctions::print("Has main screen");
-	return true;
-}
-
-String DatabaseUI::_get_plugin_name() const {
-	return "GDDB Plugin";
-}
-
-Ref<Texture2D> DatabaseUI::_get_plugin_icon() {
-	return *get_editor_interface()->get_base_control()->get_theme_icon("Node", "EditorIcons");
-}
-
-void DatabaseUI::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("_enter_tree"), &DatabaseUI::_enter_tree);
-	ClassDB::bind_method(D_METHOD("_exit_tree"), &DatabaseUI::_exit_tree);
-	ClassDB::bind_method(D_METHOD("has_main_screen"), &DatabaseUI::_has_main_screen);
-	ClassDB::bind_method(D_METHOD("get_plugin_name"), &DatabaseUI::_get_plugin_name);
-	ClassDB::bind_method(D_METHOD("get_plugin_icon"), &DatabaseUI::_get_plugin_icon);
-
-	// // Methods.
-	// ClassDB::bind_method(D_METHOD("simple_func"), &DatabaseUI::simple_func);
+	// Methods.
+	ClassDB::bind_method(D_METHOD("query_column"), &Database::query_column);
 	// ClassDB::bind_method(D_METHOD("simple_const_func"), &DatabaseUI::simple_const_func);
 	// ClassDB::bind_method(D_METHOD("return_something"), &DatabaseUI::return_something);
 
@@ -97,10 +75,47 @@ void DatabaseUI::_bind_methods() {
 	// BIND_CONSTANT(CONSTANT_WITHOUT_ENUM);
 }
 
-DatabaseUI::DatabaseUI() {
-	UtilityFunctions::print("Constructor.");
+Database::Database(String path) {
+	handle = DbReader::open_db(path.utf8().get_data());
+	UtilityFunctions::print("Constructed database.");
 }
 
-DatabaseUI::~DatabaseUI() {
-	UtilityFunctions::print("Destructor.");
+Database::~Database() {
+	UtilityFunctions::print("Destructed database");
+}
+
+TypedArray<String> query_column(String column) {
+	bool found = false;
+	uint8_t colidx = 0;
+	uint8_t counter = 0;
+	for(auto testcol : handle->columns)
+	{
+		if(testcol.name == column.utf8().get_data())
+		{
+			colidx = counter;
+			found = true;
+			break;
+		}
+		counter += 1;
+	}
+
+	if(!found)
+	{
+		return TypedArray<String>();
+	}
+	else 
+	{
+		auto matches = DbOperations::lookup_by_string(&*handle, counter);
+		TypedArray<String> resultArray();
+		for(auto entryidx : matches)
+		{
+			Dictionary entry();
+			for(auto kvp : handle->entries["entries"][entryidx].object_range())
+			{
+				entry[kvp.key()] = kvp.value();
+			}
+			resultArray.push_back(entry);
+		}
+		return resultArray;
+	}
 }

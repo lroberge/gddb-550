@@ -1,21 +1,26 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <vector>
+#include <fstream>
 
-#include "DbUtils.h"
+#include <jsoncons/json.hpp>
+#include <jsoncons_ext/bson/bson.hpp>
 
-static class DbReader
+#include "DbUtility.h"
+#include "DbPages.h"
+
+
+class DbReader
 {
 public:
-    static DatabaseHandle *open_file(std::string);
+	static std::unique_ptr<DbHandle> open_db(std::string path);
 
-private:
-    static bool check_magic(std::ifstream *);
-    static bool check_crc(std::ifstream *);
-    static std::string get_name(std::ifstream *);
-    // static std::vector<ColumnType> get_columns(std::ifstream *);
-    // static int get_numpages(std::ifstream *);
+public: //private, but public for testing
+	static std::shared_ptr<DbPage> load_page(DbHandle* dbhandle, uint16_t index);
+	//static int find_next_page(DbHandle* dbhandle, PageType type, int from = 1);
+	static std::shared_ptr<StructureData> load_structure_page(DbHandle* dbhandle);
+	static bool load_entries(DbHandle* dbhandle);
+	static jsoncons::ojson load_index(DbHandle* dbhandle, uint8_t column);
 };
+

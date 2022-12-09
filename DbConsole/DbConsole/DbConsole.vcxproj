@@ -136,6 +136,7 @@
     <ClCompile Include="DbOperations.cpp" />
     <ClCompile Include="DbReader.cpp" />
     <ClCompile Include="DbWriter.cpp" />
+    <ClCompile Include="include\MurmurHash3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DbOperations.h" />

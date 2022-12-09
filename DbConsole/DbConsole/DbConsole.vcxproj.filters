@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\include">
+      <UniqueIdentifier>{d40e9767-e787-4f54-b17e-a40124e15046}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DbConsole.cpp">
@@ -26,6 +29,9 @@
     </ClCompile>
     <ClCompile Include="DbOperations.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MurmurHash3.cpp">
+      <Filter>Source Files\include</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

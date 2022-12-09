@@ -1,63 +1,142 @@
-#pragma once
-
 #include "DbReader.h"
-#include "sqlite3.h"
 
-// #define DB_MAGIC
-
-DatabaseHandle *DbReader::open_file(std::string path)
+std::unique_ptr<DbHandle> DbReader::open_db(std::string path)
 {
-    std::streampos offset;
+	auto dbhandle = std::make_unique<DbHandle>();
 
-    std::ifstream dbfile(path, std::ios::binary);
-    if (dbfile.is_open())
-    {
-        if (!check_magic(&dbfile))
-        {
-            return new DatabaseHandle;
-        }
-        if (!check_crc(&dbfile))
-        {
-            return new DatabaseHandle;
-        }
+	std::ifstream db(path, std::ios::binary);
+	if (db.is_open())
+	{
+		auto head = std::make_unique<DbHeader>();
 
-        dbfile.close();
-    }
+		db.read(reinterpret_cast<char*>(&*head), sizeof(DbHeader));
+		db.close();
+
+		std::cout << "read magic: " << head->magic << "\n";
+		std::cout << "read version: " << head->version << "\n";
+		std::cout << "read format: " << (uint16_t)head->format << "\n";
+		std::cout << "read dirty: " << head->dirty << "\n";
+		std::cout << "read crc32: " << head->crc32 << "\n";
+		std::cout << "read pagecount: " << head->pagecount << "\n";
+
+		dbhandle->basepath = path.substr(0, path.length() - 5);
+		dbhandle->path = path;
+		dbhandle->entriespath = path.substr(0, path.length() - 5) + ".bson";
+		dbhandle->format = head->format;
+
+		auto structure = load_structure_page(&*dbhandle);
+		dbhandle->columncount = structure->columncount;
+		dbhandle->columns.assign(structure->columncount, *(structure->columns));
+
+		load_entries(&*dbhandle);
+	}
+	else
+	{
+		dbhandle->error = true;
+	}
+
+	return dbhandle;
 }
 
-bool DbReader::check_magic(std::ifstream *dbfile)
+std::shared_ptr<DbPage> DbReader::load_page(DbHandle* dbhandle, uint16_t index)
 {
-    char *memblock = new char[5];
-    dbfile->read(memblock, 5);
-    if (std::string{memblock} == "gddb")
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+	auto page = std::make_shared<DbPage>();
+
+	if (dbhandle->error) 
+	{
+		page->type = PageType::empty;
+		return page;
+	}
+
+	std::ifstream istr(dbhandle->path, std::ios::binary);
+
+	istr.seekg(sizeof(DbHeader) + (PAGE_LENGTH * index), istr.beg);
+
+	if (istr.is_open() && istr.good()) 
+	{
+		istr.read(reinterpret_cast<char*>(&*page), PAGE_LENGTH);
+		istr.close();
+	}
+	else 
+	{
+		page->type = PageType::empty;
+	}
+
+	return page;
 }
 
-bool DbReader::check_crc(std::ifstream *dbfile)
+//int DbReader::find_next_page(DbHandle* dbhandle, PageType type, int from)
+//{
+//	std::ifstream istr(dbhandle->path, std::ios::binary);
+//
+//	PageType currtype = PageType::empty;
+//	istr.seekg(sizeof(DbHeader) + (PAGE_LENGTH * from), istr.beg);
+//	for (int i = from; !istr.eof(); i++) {
+//		istr.read(reinterpret_cast<char*>(&currtype), 2);
+//		if (currtype == type) {
+//			istr.close();
+//			return i;
+//		}
+//		istr.seekg(sizeof(DbHeader) + (PAGE_LENGTH * i + 1), istr.beg);
+//	}
+//	istr.close();
+//	return -1;
+//}
+
+std::shared_ptr<StructureData> DbReader::load_structure_page(DbHandle* dbhandle)
 {
-    dbfile->ignore(16);
-    return true;
+	auto structurepage = load_page(dbhandle, 0);
+	if (structurepage->type == PageType::dbstructure) {
+		return std::shared_ptr<StructureData>(structurepage, &(structurepage->structure));
+	}
+	else {
+		return std::make_shared<StructureData>();
+	}
 }
 
-std::string DbReader::get_name(std::ifstream *dbfile)
+jsoncons::ojson DbReader::load_index(DbHandle* dbhandle, uint8_t column)
 {
-    unsigned short namelen = dbfile->get();
-    char *memblock = new char[namelen];
-    dbfile->read(memblock, namelen);
-    return std::string{memblock};
+	if (column < dbhandle->columns.size() && dbhandle->columns[column].indexed && !dbhandle->error) {
+		
+		std::ifstream istr(dbhandle->basepath + "_" + std::to_string(column) + ".index", std::ios::binary);
+
+		if (istr.is_open() && istr.good())
+		{
+			std::vector<uint8_t> contents((std::istreambuf_iterator<char>(istr)), std::istreambuf_iterator<char>());
+
+			jsoncons::ojson index(jsoncons::bson::decode_bson<jsoncons::ojson>(contents));
+
+			istr.close();
+			return index;
+		}
+		else { return jsoncons::ojson(); }
+	}
+	else {
+		return jsoncons::ojson();
+	}
 }
 
-// std::vector<ColumnType> DbReader::get_columns(std::ifstream *dbfile)
-// {
+bool DbReader::load_entries(DbHandle* dbhandle)
+{
+	if (dbhandle->error)
+	{
+		return false;
+	}
 
-// }
+	std::ifstream istr(dbhandle->entriespath, std::ios::binary);
 
-// int DbReader::get_numpages(std::ifstream *dbfile)
-// {
-// }
+	if (istr.is_open() && istr.good())
+	{
+		std::vector<uint8_t> contents((std::istreambuf_iterator<char>(istr)), std::istreambuf_iterator<char>());
+
+		jsoncons::ojson entries(jsoncons::bson::decode_bson<jsoncons::ojson>(contents));
+		dbhandle->entries = entries.at_or_null("entries");
+
+		istr.close();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

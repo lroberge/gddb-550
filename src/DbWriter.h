@@ -1,21 +1,29 @@
 #pragma once
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <vector>
+#include <fstream>
 
-#include "DbUtils.h"
+#include <MurmurHash3.h>
 
-static class DbWriter
+#include <jsoncons/json.hpp>
+#include <jsoncons_ext/bson/bson.hpp>
+
+#include "DbUtility.h"
+#include "DbPages.h"
+
+class DbWriter
 {
 public:
-    static DatabaseHandle *create_db(std::string name);
+	static DbHandle create_db(std::string path);
 
-private:
-    static void create_magic(std::ofstream *);
-    static void create_crc(std::ofstream *);
-    static void create_name(std::ofstream *);
-    // static std::vector<ColumnType> get_columns(std::ifstream *);
-    // static int get_numpages(std::ifstream *);
+public: //private, but public for testing
+	static bool write_page(DbHandle* dbhandle, DbPage* page, uint16_t index);
+	static bool create_string_index(DbHandle* dbhandle, uint8_t column);
+	static bool move_string_index(DbHandle* dbhandle, uint8_t oldcol, uint8_t newcol);
+	static bool delete_string_index(DbHandle* dbhandle, uint8_t column);
+	static bool index_string_entry(DbHandle* dbhandle, uint8_t column, uint32_t entry);
+	static bool deindex_string_entry(DbHandle* dbhandle, uint8_t column, uint32_t entry);
+	static bool write_entries(DbHandle* dbhandle, jsoncons::ojson* entries);
 };
+

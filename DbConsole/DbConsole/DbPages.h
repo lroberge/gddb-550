@@ -25,8 +25,9 @@ struct TableIndexData {
 	};
 };
 
-struct TreeIndexData {
-
+struct TagIndexData {
+	uint8_t tagindex = 0;
+	uint32_t entryindexes[];
 };
 
 //struct EntryData {
@@ -40,7 +41,7 @@ struct DbPage {
 		StructureData structure;
 		TagListData taglist;
 		TableIndexData table;
-		TreeIndexData tree;
+		//TreeIndexData tree;
 		//EntryData entries;
 		char data[8188];
 	};

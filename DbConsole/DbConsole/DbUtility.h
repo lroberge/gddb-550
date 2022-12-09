@@ -24,11 +24,11 @@ enum ColumnType
     tags
 };
 
-enum IndexType
-{
-    table,
-    tree
-};
+//enum IndexType
+//{
+//    table,
+//    tree
+//};
 
 enum PageType
 {
@@ -40,17 +40,18 @@ enum PageType
     entry
 };
 
-struct Index {
-    IndexType type;
-    uint16_t idxpage;
-    uint16_t idxindex;
-};
+//struct Index {
+//    IndexType type;
+//    uint16_t idxpage;
+//    uint16_t idxindex;
+//};
 
 struct Column {
     ColumnType type;
     char name[MAX_COLUMN_NAME_LENGTH];
-    uint8_t numindexes;
-    Index indexes[MAX_INDEXES];
+    bool indexed = false;
+    /*uint8_t numindexes;
+    Index indexes[MAX_INDEXES];*/
 };
 
 struct SimpleColor {
@@ -67,7 +68,9 @@ struct Tag {
 struct DbHandle
 {
     std::string path;
+    std::string basepath;
     std::string entriespath;
+    jsoncons::ojson entries;
     uint8_t format = 0;
     uint8_t columncount = 0;
     std::vector<Column> columns;

@@ -24,8 +24,10 @@ DbHandle DbWriter::create_db(std::string path)
 		db.close();
 
 		// Set up db handle with initial values
+		dbhandle.basepath = path.substr(0, path.length() - 5);
 		dbhandle.path = path;
-		dbhandle.entriespath = path.substr(0, path.length() - 5) + ".bson";
+		dbhandle.entriespath = dbhandle.basepath + ".bson";
+		dbhandle.entries = jsoncons::ojson::parse(R"({"entries": []})");
 		dbhandle.format = DbFormat::paged;
 		dbhandle.columncount = 0;
 		//dbhandle.columns = nullptr;
@@ -36,6 +38,8 @@ DbHandle DbWriter::create_db(std::string path)
 		structurepage.structure = StructureData();
 
 		write_page(&dbhandle, &structurepage, 0);
+
+		DbWriter::write_entries(&dbhandle, &dbhandle.entries);
 
 		std::cout << "Successfully created db!\n\n";
 	}
@@ -69,6 +73,91 @@ bool DbWriter::write_page(DbHandle* dbhandle, DbPage* page, uint16_t index)
 	}
 
 	return true;
+}
+
+bool DbWriter::create_string_index(DbHandle* dbhandle, uint8_t column)
+{
+	if (dbhandle->error ||
+		dbhandle->columns.size() < column ||
+		dbhandle->columns[column].type != ColumnType::string)
+	{
+		return false;
+	}
+
+	std::string path = dbhandle->path;
+	auto colname = dbhandle->columns[column].name;
+
+	std::fstream ostr(dbhandle->basepath + "_" + std::to_string(column) + ".index", std::ios::out | std::ios::binary | std::ios::trunc);
+
+	if (ostr.is_open() && ostr.good())
+	{
+		std::map<uint64_t, std::vector<uint32_t>> stringIndexMap;
+
+		uint64_t seed = 7;
+		uint32_t hash = 0;
+
+		uint32_t currIndex = 0;
+		for (auto& entry : dbhandle->entries.array_range())
+		{
+			MurmurHash3_x86_32(entry.at_or_null(colname).as_cstring(), strlen(entry.at_or_null(colname).as_cstring()), seed, &hash);
+			if (!stringIndexMap.contains(hash))
+			{
+				std::vector<uint32_t> newEntry{ currIndex };
+				stringIndexMap.insert_or_assign(hash, newEntry);
+			}
+			else {
+				stringIndexMap.at(hash).push_back(currIndex);
+			}
+
+			currIndex += 1;
+		}
+
+		std::vector<uint8_t> buffer;
+		jsoncons::bson::bson_bytes_encoder encoder(buffer);
+
+		encoder.begin_object();
+		for (auto& indexEntry : stringIndexMap)
+		{
+			encoder.key(std::to_string(indexEntry.first));
+			encoder.begin_array();
+			for (auto& dbEntry : indexEntry.second) 
+			{
+				encoder.uint64_value(dbEntry);
+			}
+			encoder.end_array();
+		}
+		encoder.end_object();
+		encoder.flush();
+
+		ostr.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+
+		dbhandle->columns[column].indexed = true;
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	return false;
+}
+
+bool DbWriter::index_string_entry(DbHandle* dbhandle, uint8_t column, uint32_t entry)
+{
+	if (dbhandle->error || dbhandle->entries.size() < entry || dbhandle->columncount < column)
+	{
+		return false;
+	}
+
+
+
+	return false;
+}
+
+bool DbWriter::deindex_string_entry(DbHandle* dbhandle, uint8_t column, uint32_t entry)
+{
+	return false;
 }
 
 bool DbWriter::write_entries(DbHandle* dbhandle, jsoncons::ojson* entries)
